@@ -6,10 +6,9 @@ from multiagent.scenario import BaseScenario
 class Scenario(BaseScenario):
     def make_world(self):
         world = World()
-        # set any world properties first
         world.dim_c = 2
-        num_good_agents = 2  # 被追捕的一方
-        num_adversaries = 4  # 追捕者
+        num_good_agents = 1  # 被追捕的一方
+        num_adversaries = 3  # 追捕者
         num_agents = num_adversaries + num_good_agents
         num_landmarks = 2
         # add agents
@@ -37,13 +36,11 @@ class Scenario(BaseScenario):
 
 
     def reset_world(self, world):
-        # random properties for agents
         for i, agent in enumerate(world.agents):
             agent.color = np.array([0.35, 0.85, 0.35]) if not agent.adversary else np.array([0.85, 0.35, 0.35])
-            # random properties for landmarks
         for i, landmark in enumerate(world.landmarks):
             landmark.color = np.array([0.25, 0.25, 0.25])
-        # set random initial states
+
         for agent in world.agents:
             agent.state.p_pos = np.random.uniform(-1, +1, world.dim_p)
             agent.state.p_vel = np.zeros(world.dim_p)

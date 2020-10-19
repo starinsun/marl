@@ -2,7 +2,7 @@ import numpy as np
 import parl
 from parl import layers
 from paddle import fluid
-from parl.utils import ReplayMemory
+from parl.utils import ReplayMemory  # 经验回放都是封装好的
 
 
 class MAAgent(parl.Agent):
@@ -13,11 +13,11 @@ class MAAgent(parl.Agent):
                  act_dim_n=None,
                  batch_size=None,
                  speedup=False):
-        assert isinstance(agent_index, int)
-        assert isinstance(obs_dim_n, list)
-        assert isinstance(act_dim_n, list)
-        assert isinstance(batch_size, int)
-        assert isinstance(speedup, bool)
+        # assert isinstance(agent_index, int)
+        # assert isinstance(obs_dim_n, list)
+        # assert isinstance(act_dim_n, list)
+        # assert isinstance(batch_size, int)
+        # assert isinstance(speedup, bool)
         self.agent_index = agent_index
         self.obs_dim_n = obs_dim_n
         self.act_dim_n = act_dim_n
@@ -55,13 +55,15 @@ class MAAgent(parl.Agent):
                 layers.data(
                     name='obs' + str(i),
                     shape=[self.obs_dim_n[i]],
-                    dtype='float32') for i in range(self.n)
+                    dtype='float32'
+                )for i in range(self.n)
             ]
             act_n = [
                 layers.data(
                     name='act' + str(i),
                     shape=[self.act_dim_n[i]],
-                    dtype='float32') for i in range(self.n)
+                    dtype='float32'
+                )for i in range(self.n)
             ]
             target_q = layers.data(name='target_q', shape=[], dtype='float32')
             self.critic_cost = self.alg.learn(obs_n, act_n, target_q)

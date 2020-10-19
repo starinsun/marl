@@ -4,7 +4,7 @@ import argparse
 import numpy as np
 from model import MAModel
 from agent import MAAgent
-import parl
+from alg import GSMADDPG
 from parl.env.multiagent_simple_env import MAenv
 from parl.utils import logger, summary
 
@@ -50,9 +50,9 @@ def run_episode(env, agents):
 
 def train_agent():
     env = MAenv(args.env)
-    logger.info('agent num: {}'.format(env.n))
-    logger.info('observation_space: {}'.format(env.observation_space))
-    logger.info('action_space: {}'.format(env.action_space))
+    logger.info('智能体数量: {}'.format(env.n))
+    logger.info('状态空间: {}'.format(env.observation_space))
+    logger.info('动作空间: {}'.format(env.action_space))
     logger.info('obs_shape_n: {}'.format(env.obs_shape_n))
     logger.info('act_shape_n: {}'.format(env.act_shape_n))
     for i in range(env.n):
@@ -75,7 +75,7 @@ def train_agent():
     agents = []
     for i in range(env.n):
         model = MAModel(env.act_shape_n[i])
-        algorithm = parl.algorithms.MADDPG(
+        algorithm = GSMADDPG(
             model,
             agent_index=i,
             act_space=env.action_space,
@@ -127,7 +127,7 @@ def train_agent():
                 final_ep_ag_rewards.append(np.mean(rew[-args.stat_rate:]))
             use_time = round(time.time() - t_start, 3)
             logger.info(
-                'Steps: {}, Episodes: {}, Mean episode reward: {}, Time: {}'.
+                '步数: {}, 轮次: {}, 收益: {}, 时间: {}'.
                 format(total_steps, total_episodes, mean_episode_reward, use_time))
             t_start = time.time()
             summary.add_scalar('mean_episode_reward/episode', mean_episode_reward, total_episodes)
@@ -147,18 +147,16 @@ if __name__ == '__main__':
     parser.add_argument(
         '--env',
         type=str,
-        default='simple_tag',
-        help='scenario of MultiAgentEnv')
+        default='simple_tag')
     parser.add_argument(
         '--max_step_per_episode',
         type=int,
-        default=25,
+        default=50,
         help='maximum step per episode')
     parser.add_argument(
         '--max_episodes',
         type=int,
-        default=25000,
-        help='stop condition:number of episodes')
+        default=25000)
     parser.add_argument(
         '--stat_rate',
         type=int,
@@ -167,7 +165,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--lr',
         type=float,
-        default=1e-3,
+        default=1e-4,
         help='learning rate for Adam optimizer')
     parser.add_argument(
         '--gamma', type=float, default=0.95, help='discount factor')
@@ -178,18 +176,15 @@ if __name__ == '__main__':
         help='number of episodes to optimize at the same time')
     parser.add_argument('--tau', type=int, default=0.01, help='soft update')
     parser.add_argument(
-        '--show', action='store_true', default=False, help='display or not')
+        '--show', action='store_true', default=True)
     parser.add_argument(
         '--restore',
         action='store_true',
-        default=False,
-        help='restore or not, must have model_dir')
+        default=True)
     parser.add_argument(
         '--model_dir',
         type=str,
-        default='./model',
-        help='directory for saving model')
+        default='./model')
 
     args = parser.parse_args()
-
     train_agent()
